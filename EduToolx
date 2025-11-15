@@ -1,0 +1,92 @@
+import os
+import sys
+import platform
+from modules import (
+    port_scanner,
+    web_info,
+    password_tester,
+    hash_identifier,
+    whois_lookup,
+    traceroute_tool,
+    speed_check,
+    nethunter_tools
+)
+
+def detect_nethunter():
+    # Detect if Kali NetHunter environment is present
+    paths = ["/data/data/com.offsec.nethunter", "/usr/share/nethunter"]
+    return any(os.path.exists(p) for p in paths) or "nethunter" in platform.release().lower()
+
+def banner():
+    print("""
+    =====================================
+         EduToolX v3 - Ethical Toolkit
+          Legal / Educational Use Only
+    =====================================
+    """)
+
+def menu(is_nh):
+    print("""
+    [1] Port Scanner
+    [2] Web Info Gathering
+    [3] Password Strength Test
+    [4] Hash Identifier
+    [5] WHOIS Lookup
+    [6] Traceroute
+    [7] Network Speed Test
+    """)
+    if is_nh:
+        print("[8] NetHunter Extra Tools (Advanced)")
+    print("[0] Exit")
+
+def main():
+    banner()
+    nethunter = detect_nethunter()
+    if nethunter:
+        print("[+] Kali NetHunter detected — advanced modules unlocked!")
+    else:
+        print("[*] Running in standard mode (Termux/Linux).")
+
+    while True:
+        menu(nethunter)
+        choice = input("Select an option: ")
+
+        if choice == "1":
+            target = input("Enter target IP/Domain: ")
+            port_scanner.scan(target)
+
+        elif choice == "2":
+            target = input("Enter website URL (e.g. https://example.com): ")
+            web_info.analyze(target)
+
+        elif choice == "3":
+            password = input("Enter password to test: ")
+            password_tester.check_strength(password)
+
+        elif choice == "4":
+            hash_value = input("Enter hash: ")
+            hash_identifier.identify(hash_value)
+
+        elif choice == "5":
+            domain = input("Enter domain name: ")
+            whois_lookup.lookup(domain)
+
+        elif choice == "6":
+            host = input("Enter host or IP: ")
+            traceroute_tool.trace(host)
+
+        elif choice == "7":
+            speed_check.test_speed()
+
+        elif choice == "8" and nethunter:
+            nethunter_tools.menu()
+
+        elif choice == "0":
+            print("Goodbye! Stay ethical.")
+            break
+
+        else:
+            print("Invalid choice!")
+
+if __name__ == "__main__":
+    main()
